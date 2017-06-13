@@ -9,3 +9,5 @@
     "postproc-54.dll"
     "swresample-2.dll"
     "swscale-4.dll"))
+
+(define deps '("base"))

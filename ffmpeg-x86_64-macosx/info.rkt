@@ -8,3 +8,5 @@
     "libavutil.55.dylib"
     "libswresample.2.dylib"
     "libswscale.4.dylib"))
+
+(define deps '("base"))
