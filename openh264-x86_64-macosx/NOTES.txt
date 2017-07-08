@@ -1,0 +1,3 @@
+Openh264 version 1.7.0. Compiled with:
+
+make SHAREDLIB_DIR="@loader_path"
