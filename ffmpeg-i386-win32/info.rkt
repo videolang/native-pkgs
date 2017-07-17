@@ -1,6 +1,6 @@
 #lang info
 
-(define copy-foreign-lib
+(define copy-foreign-libs
   '("avcodec-57.dll"
     "avdevice-57.dll"
     "avfilter-6.dll"
