@@ -16,10 +16,22 @@
 
 (define-runtime-path here ".")
 
+(define openh264 "libopenh264.4.dylib")
+(define avutil "libavutil.55.dylib")
+(define swresample "libswresample.2.dylib")
+(define swscale "libswscale.4.dylib")
+(define avcodec "libavcodec.57.dylib")
+(define avformat "libavformat.57.dylib")
+(define avfilter "libavfilter.6.dylib")
+
+(define ffmpeg-target (build-path here "ffmpeg-x86_64-macosx"))
+(define openh264-target (build-path here "openh264-x86_64-macosx"))
+
 (define git (find-executable-path "git"))
 (define otool (find-executable-path "otool"))
 (define install-name-tool (find-executable-path "install_name_tool"))
 (define make (find-executable-path "make"))
+
 (void
  (parameterize ([current-directory (build-path here "openh264-src")])
    (system* git "clean" "-fxd")
@@ -27,6 +39,7 @@
  (parameterize ([current-directory (build-path here "ffmpeg-src")]
                 [current-environment-variables
                  (environment-variables-copy (current-environment-variables))])
+   (putenv "PKG_CONFIG_PATH" (path->string (build-path here "openh264-src")))
    (system* git "clean" "-fxd")
    (system* (build-path (current-directory) "configure")
             "--enable-shared"
@@ -38,12 +51,6 @@
    (system* make (format "-j~a" cores))
    (system* make "install")))
 
-(define avutil "libavutil.55.dylib")
-(define swresample "libswresample.2.dylib")
-(define swscale "libswscale.4.dylib")
-(define avcodec "libavcodec.57.dylib")
-(define avformat "libavformat.57.dylib")
-(define avfilter "libavfitler.6.dylib")
 
 (define ffmpeg-def-table
   (hash avutil (set avutil)
@@ -54,11 +61,40 @@
         avfilter (set avutil avformat avcodec swscale swresample)))
 
 (void
- (parameterize ([current-directory (build-path here "ffmpeg-src//" "lib")])
+ (parameterize ([current-directory (build-path here "ffmpeg-src" "lib")])
    (define (rename input libname)
-     (define from (path->string (build-path (current-directory) libname)))
+     (define from
+       (format "~a/~a/~a"
+               (path->string (simplify-path (build-path here "ffmpeg-src/")))
+               "lib"
+               libname))
      (define to (format "@loader_path/~a" libname))
      (system* install-name-tool "-change" from to input))
    (for ([(lib target-set) (in-dict ffmpeg-def-table)])
      (for ([target target-set])
-       (rename lib target)))))
+       (rename lib target)))
+   (system* install-name-tool "-change"
+            (format "~a/~a/~a"
+                    (path->string (simplify-path (build-path here "openh264-src")))
+                    "lib"
+                    openh264)
+            (format "@loader_path/~a" openh264)
+            avcodec)))
+
+(void
+ (system* install-name-tool "-change"
+          (format "~a/~a/~a"
+                  (path->string (simplify-path (build-path here "openh264-src")))
+                  "lib"
+                  openh264)
+          (format "@loader_path/~a" openh264)
+          (build-path here "openh264-src" "lib" openh264)))
+
+(for ([(lib target-set) (in-dict ffmpeg-def-table)])
+  (copy-file (build-path here "ffmpeg-src" "lib" lib)
+             (build-path here ffmpeg-target lib)
+             #t))
+
+(copy-file (build-path here "openh264-src" "lib" openh264)
+           (build-path here ffmpeg-target openh264)
+           #t)
