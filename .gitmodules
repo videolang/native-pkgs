@@ -13,3 +13,6 @@
 [submodule "freetype2-src"]
 	path = freetype2-src
 	url = git://git.savannah.gnu.org/freetype/freetype2.git
+[submodule "frei0r-src"]
+	path = frei0r-src
+	url = git@github.com:dyne/frei0r.git
