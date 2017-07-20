@@ -33,6 +33,14 @@
 (define make (find-executable-path "make"))
 
 (void
+#;
+ (parameterize ([current-directory (build-path here "libass-src")])
+   (system* git "clean" "-fxd")
+   (system* (build-path (current-directory) "autogen.sh"))
+   (system* (build-path (current-directory) "configure")
+            (format "--prefix=~a" (current-directory)))
+   (system* make (format "-j~a" cores))
+   (system* make "install"))
  (parameterize ([current-directory (build-path here "openh264-src")])
    (system* git "clean" "-fxd")
    (system* make (format "-j~a" cores) "all" "install" (format "PREFIX=~a" (current-directory))))

@@ -7,3 +7,6 @@
 [submodule "libass-src"]
 	path = libass-src
 	url = git@github.com:libass/libass.git
+[submodule "fontconfig-src"]
+	path = fontconfig-src
+	url = git://anongit.freedesktop.org/fontconfig
