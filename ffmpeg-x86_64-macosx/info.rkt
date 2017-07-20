@@ -9,5 +9,4 @@
     "libswresample.2.dylib"
     "libswscale.4.dylib"))
 
-(define deps '("base"
-               "openh264-x86_64-macosx"))
+(define deps '("base"))

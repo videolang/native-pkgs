@@ -92,9 +92,9 @@
 
 (for ([(lib target-set) (in-dict ffmpeg-def-table)])
   (copy-file (build-path here "ffmpeg-src" "lib" lib)
-             (build-path ffmpeg-target lib)
+             (build-path here ffmpeg-target lib)
              #t))
 
 (copy-file (build-path here "openh264-src" "lib" openh264)
-           (build-path openh264-target openh264)
+           (build-path here ffmpeg-target openh264)
            #t)
