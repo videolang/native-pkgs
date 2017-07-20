@@ -32,7 +32,22 @@
 (define install-name-tool (find-executable-path "install_name_tool"))
 (define make (find-executable-path "make"))
 
-(void
+(parameterize ([current-directory here]
+               [current-environment-variables
+                (environment-variables-copy (current-environment-variables))])
+  (putenv "PKG_CONFIG_PATH"
+          (string-join (list (path->string (simple-form-path "libpng-src/lib/pkgconfig"))
+                             (path->string (simple-form-path "freetype2-src/lib/build/pkgconfig"))
+                             (path->string (simple-form-path "openh264-src")))
+                       ":"))
+ (parameterize ([current-directory (build-path here "libpng16")])
+   (system* git "checkout" ".")
+   (system* git "clean" "-fxd")
+   (system* (simple-form-path "autogen.sh"))
+   (system* (simple-form-path "configure")
+            (format "--prefix=~a" (current-directory)))
+   (system* make (format "-j~a" cores))
+   (system* make "install"))
  (parameterize ([current-directory (build-path here "freetype2-src")])
    (system* git "checkout" ".")
    (system* git "clean" "-fxd")
@@ -40,7 +55,7 @@
    (system* (simple-form-path "autogen.sh"))
    (system* (simple-form-path "configure")
             (format "--prefix=~a" (simple-form-path "build")))
-   (system* make)
+   (system* make (format "-j~a" cores))
    (system* make "install"))
  (parameterize ([current-directory (build-path here "libass-src")])
    (system* git "clean" "-fxd")
@@ -52,10 +67,7 @@
  (parameterize ([current-directory (build-path here "openh264-src")])
    (system* git "clean" "-fxd")
    (system* make (format "-j~a" cores) "all" "install" (format "PREFIX=~a" (current-directory))))
- (parameterize ([current-directory (build-path here "ffmpeg-src")]
-                [current-environment-variables
-                 (environment-variables-copy (current-environment-variables))])
-   (putenv "PKG_CONFIG_PATH" (path->string (build-path here "openh264-src")))
+ (parameterize ([current-directory (build-path here "ffmpeg-src")])
    (system* git "clean" "-fxd")
    (system* (simple-form-path "configure")
             "--enable-shared"
@@ -66,7 +78,6 @@
             ;"--libdir='@loader_path'")
    (system* make (format "-j~a" cores))
    (system* make "install")))
-
 
 (define ffmpeg-def-table
   (hash avutil (set)
