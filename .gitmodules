@@ -4,3 +4,6 @@
 [submodule "openh264-src"]
 	path = openh264-src
 	url = git@github.com:cisco/openh264.git
+[submodule "libass-src"]
+	path = libass-src
+	url = git@github.com:libass/libass.git
