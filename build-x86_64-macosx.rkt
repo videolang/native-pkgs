@@ -53,40 +53,33 @@
 
 
 (define ffmpeg-def-table
-  (hash avutil (set avutil)
-        swresample (set avutil swresample)
-        swscale (set avutil swscale)
-        avcodec (set avutil swresample avcodec)
+  (hash avutil (set)
+        swresample (set avutil)
+        swscale (set avutil)
+        avcodec (set avutil swresample)
         avformat (set avutil avcodec swresample)
         avfilter (set avutil avformat avcodec swscale swresample)))
 
 (void
  (parameterize ([current-directory (build-path here "ffmpeg-src" "lib")])
-   (define (rename input libname)
+   (define (rename input libname relative-to)
      (define from
        (format "~a/~a/~a"
-               (path->string (simplify-path (build-path here "ffmpeg-src/")))
+               (path->string (simplify-path (build-path here relative-to)))
                "lib"
                libname))
      (define to (format "@loader_path/~a" libname))
      (system* install-name-tool "-change" from to input))
    (for ([(lib target-set) (in-dict ffmpeg-def-table)])
      (for ([target target-set])
-       (rename lib target)))
-   (system* install-name-tool "-change"
-            (format "~a/~a/~a"
-                    (path->string (simplify-path (build-path here "openh264-src")))
-                    "lib"
-                    openh264)
-            (format "@loader_path/~a" openh264)
-            avcodec)))
+       (rename lib target "ffmpeg-src/"))
+     (rename lib openh264 "openh264-src/")
+     (system* install-name-tool "-id"
+              (format "@loader_path/~a" lib)
+              lib))))
 
 (void
- (system* install-name-tool "-change"
-          (format "~a/~a/~a"
-                  (path->string (simplify-path (build-path here "openh264-src")))
-                  "lib"
-                  openh264)
+ (system* install-name-tool "-id"
           (format "@loader_path/~a" openh264)
           (build-path here "openh264-src" "lib" openh264)))
 
