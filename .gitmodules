@@ -16,3 +16,6 @@
 [submodule "frei0r-src"]
 	path = frei0r-src
 	url = git@github.com:dyne/frei0r.git
+[submodule "libpng-src"]
+	path = libpng-src
+	url = git://git.code.sf.net/p/libpng/code

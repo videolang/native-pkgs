@@ -33,11 +33,19 @@
 (define make (find-executable-path "make"))
 
 (void
-#;
+ (parameterize ([current-directory (build-path here "freetype2-src")])
+   (system* git "checkout" ".")
+   (system* git "clean" "-fxd")
+   (make-directory (simple-form-path "build"))
+   (system* (simple-form-path "autogen.sh"))
+   (system* (simple-form-path "configure")
+            (format "--prefix=~a" (simple-form-path "build")))
+   (system* make)
+   (system* make "install"))
  (parameterize ([current-directory (build-path here "libass-src")])
    (system* git "clean" "-fxd")
-   (system* (build-path (current-directory) "autogen.sh"))
-   (system* (build-path (current-directory) "configure")
+   (system* (simple-form-path "autogen.sh"))
+   (system* (simple-form-path "configure")
             (format "--prefix=~a" (current-directory)))
    (system* make (format "-j~a" cores))
    (system* make "install"))
@@ -49,7 +57,7 @@
                  (environment-variables-copy (current-environment-variables))])
    (putenv "PKG_CONFIG_PATH" (path->string (build-path here "openh264-src")))
    (system* git "clean" "-fxd")
-   (system* (build-path (current-directory) "configure")
+   (system* (simple-form-path "configure")
             "--enable-shared"
             "--disable-sdl2"
             "--disable-indev=jack"
