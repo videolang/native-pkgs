@@ -19,3 +19,6 @@
 [submodule "libpng-src"]
 	path = libpng-src
 	url = git://git.code.sf.net/p/libpng/code
+[submodule "OpenGL-Registry"]
+	path = OpenGL-Registry
+	url = git@github.com:KhronosGroup/OpenGL-Registry.git
