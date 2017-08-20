@@ -22,3 +22,6 @@
 [submodule "OpenGL-Registry"]
 	path = OpenGL-Registry
 	url = git@github.com:KhronosGroup/OpenGL-Registry.git
+[submodule "fribidi-src"]
+	path = fribidi-src
+	url = git://anongit.freedesktop.org/fribidi/fribidi
