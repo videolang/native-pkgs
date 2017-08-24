@@ -14,31 +14,61 @@
    limitations under the License.
 */
 
+/**
+  This library exists ONLY because va_list doesn't currently wrok with libffi.
+  (Or at least Racket's build of it. So this library only
+  expands a log message and passes it along to Racket. It is
+  NOT necesarry to run video.
+  */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <libavutil/avutil.h>
 
-void (*racket_log_callback)(void*, int, const char*) = NULL;
+void (*racket_log_callback)(void* avclass,
+                            int log_level,
+                            int msg_len,
+                            const char* msg) = NULL;
 
-void set_racket_log_callback(void (*callback)(void*, int, const char*)) {
+/**
+ * @brief set_racket_log_callback
+ *
+ * The call to set the Racket function that serves as a callback.
+ *
+ * Note that only ONE function can be used at a time.
+ */
+void set_racket_log_callback(void (*callback)(void*, int, int, const char*)) {
   racket_log_callback = callback;
 }
 
+#define FIND_BUFF_SIZE 32
+
+/**
+ * @brief ffmpeg_log_callback
+ *
+ * The function that will intercept the av_log message. Note
+ * that Racket is responsible for connecting it with ffmpeg
+ *
+ * @param avcl
+ * @param level
+ * @param fmt
+ * @param vl
+ */
 void ffmpeg_log_callback(void * avcl,
                          int level,
                          const char * fmt,
                          va_list vl) {
   int buffsize;
-  char find_size_buf[32];
+  char find_size_buf[FIND_BUFF_SIZE];
   char *buff;
   va_list size_vl;
 
   va_copy(size_vl, vl);
-  buffsize = vsnprintf(find_size_buf, 64, fmt, size_vl);
+  buffsize = vsnprintf(find_size_buf, FIND_BUFF_SIZE, fmt, size_vl);
   buff = malloc((buffsize + 1) * sizeof(char));
   vsnprintf(buff, buffsize + 1, fmt, vl);
   if(racket_log_callback) {
-    racket_log_callback(avcl, level, buff);
+    racket_log_callback(avcl, level, buffsize, buff);
   }
   free(buff);
 }
