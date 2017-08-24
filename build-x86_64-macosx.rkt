@@ -47,6 +47,7 @@
                              (path->string (simple-form-path "freetype2-src/lib/build/pkgconfig"))
                              (path->string (simple-form-path "openh264-src")))
                        ":"))
+#|
   (parameterize ([current-directory (build-path here "fribidi-src")])
     (building-lib "fribidi")
     (system* git "clean" "-fxd")
@@ -60,6 +61,7 @@
     (system* make (format "-j~a" cores))
     ;; make install fails, but the needed file is still generated.
     (system* make "install"))
+|#
   (parameterize ([current-directory (build-path here "libpng16-src")])
     (building-lib "libpng")
     (system* git "checkout" ".")
@@ -151,6 +153,7 @@
            (build-path openh264-target openh264)
            #t)
 
+#;
 (copy-file (build-path here "fribidi-src" "lib" fribidi)
            (build-path fribidi-target fribidi)
            #t)
