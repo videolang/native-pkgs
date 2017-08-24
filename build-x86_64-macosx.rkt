@@ -24,15 +24,18 @@
 (define avcodec "libavcodec.57.dylib")
 (define avformat "libavformat.57.dylib")
 (define avfilter "libavfilter.6.dylib")
+(define libvid "libvid.0.dylib")
 
 (define ffmpeg-target (build-path here "ffmpeg-x86_64-macosx"))
 (define openh264-target (build-path here "openh264-x86_64-macosx"))
 (define fribidi-target (build-path here "fribidi-x86_64-macosx"))
+(define libvid-target (build-path here "libvid-x86_64-macosx"))
 
 (define git (find-executable-path "git"))
 (define otool (find-executable-path "otool"))
 (define install-name-tool (find-executable-path "install_name_tool"))
 (define make (find-executable-path "make"))
+(define gcc (find-executable-path "gcc"))
 
 (define (building-lib lib)
   (displayln "==================================================================")
@@ -111,7 +114,17 @@
             (format "--prefix=~a" (current-directory)))
             ;"--libdir='@loader_path'")
    (system* make (format "-j~a" cores))
-   (system* make "install")))
+   (system* make "install"))
+  (parameterize ([current-directory (build-path here "libvid-src")])
+    (system* gcc "-shared"
+             "-undefined"
+             "dynamic_lookup"
+             "-L../ffmpeg-src/lib/"
+             "-I../ffmpeg-src/include/"
+             "-lavutil"
+             "-o"
+             "libvid.0.dylib"
+             "libvid.c")))
 
 (define ffmpeg-def-table
   (hash avutil (set)
@@ -151,6 +164,10 @@
 
 (copy-file (build-path here "openh264-src" "lib" openh264)
            (build-path openh264-target openh264)
+           #t)
+
+(copy-file (build-path here "libvid-src" libvid)
+           (build-path libvid-target libvid)
            #t)
 
 #;
