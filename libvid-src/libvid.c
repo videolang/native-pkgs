@@ -20,7 +20,7 @@
 
 void (*racket_log_callback)(void*, int, const char*) = NULL;
 
-void set_racket_log_callback(void (*callback)()) {
+void set_racket_log_callback(void (*callback)(void*, int, const char*)) {
   racket_log_callback = callback;
 }
 
