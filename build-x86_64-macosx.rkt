@@ -108,6 +108,7 @@
    (system* git "clean" "-fxd")
    (system* (simple-form-path "configure")
             "--enable-shared"
+            ;"--disable-pthreads" ;; <-- Only uncomment for testing
             "--disable-sdl2"
             "--disable-indev=jack"
             "--enable-libopenh264"
@@ -116,7 +117,10 @@
    (system* make (format "-j~a" cores))
    (system* make "install"))
   (parameterize ([current-directory (build-path here "libvid-src")])
-    (system* gcc "-shared"
+    (system* gcc
+             "-Wall"
+             "-Werror"
+             "-shared"
              "-undefined"
              "dynamic_lookup"
              "-L../ffmpeg-src/lib/"
@@ -151,6 +155,17 @@
      (system* install-name-tool "-id"
               (format "@loader_path/~a" lib)
               lib))))
+
+(void
+ (parameterize ([current-directory (build-path here "libvid-src")])
+   (system* install-name-tool
+            "-change" 
+            (format "~a/~a/~a"
+                    (path->string (simplify-path (build-path here "ffmpeg-src/")))
+                    "lib"
+                    avutil)
+            (format "@loader_path/~a" avutil)
+            libvid)))
 
 (void
  (system* install-name-tool "-id"
