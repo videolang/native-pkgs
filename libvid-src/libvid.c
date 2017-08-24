@@ -63,14 +63,16 @@ void ffmpeg_log_callback(void * avcl,
   char *buff;
   va_list size_vl;
 
-  va_copy(size_vl, vl);
-  buffsize = vsnprintf(find_size_buf, FIND_BUFF_SIZE, fmt, size_vl);
-  buff = malloc((buffsize + 1) * sizeof(char));
-  vsnprintf(buff, buffsize + 1, fmt, vl);
   if(racket_log_callback) {
+    va_copy(size_vl, vl);
+    buffsize = vsnprintf(find_size_buf, FIND_BUFF_SIZE, fmt, size_vl);
+    buff = malloc((buffsize + 1) * sizeof(char));
+    vsnprintf(buff, buffsize + 1, fmt, vl);
+    printf("%p\n",buff);
     racket_log_callback(avcl, level, buffsize, buff);
+  } else {
+    vsnprintf(find_size_buf, FIND_BUFF_SIZE, fmt, vl);
   }
-  free(buff);
 }
 
 int libvid_get_version_major() {
