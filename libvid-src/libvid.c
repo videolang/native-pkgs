@@ -29,7 +29,7 @@ void ffmpeg_log_callback(void * avcl,
                          const char * fmt,
                          va_list vl) {
   int buffsize;
-  char find_size_buf[64];
+  char find_size_buf[32];
   char *buff;
   va_list size_vl;
 
@@ -39,9 +39,8 @@ void ffmpeg_log_callback(void * avcl,
   vsnprintf(buff, buffsize + 1, fmt, vl);
   if(racket_log_callback) {
     racket_log_callback(avcl, level, buff);
-  } else {
-    free(buff);
   }
+  free(buff);
 }
 
 int libvid_get_version_major() {
