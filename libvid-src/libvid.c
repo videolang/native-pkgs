@@ -28,7 +28,7 @@
 void (*racket_log_callback)(void* avclass,
                             int log_level,
                             int msg_len,
-                            const char* msg) = NULL;
+                            char* msg) = NULL;
 
 /**
  * @brief set_racket_log_callback
@@ -37,7 +37,7 @@ void (*racket_log_callback)(void* avclass,
  *
  * Note that only ONE function can be used at a time.
  */
-void set_racket_log_callback(void (*callback)(void*, int, int, const char*)) {
+void set_racket_log_callback(void (*callback)(void*, int, int, char*)) {
   racket_log_callback = callback;
 }
 
