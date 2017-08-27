@@ -22,13 +22,24 @@
   */
 
 #include <stdlib.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <libavutil/avutil.h>
 
-void (*racket_log_callback)(char* name,
-                            int log_level,
-                            int msg_len,
-                            char* msg) = NULL;
+#define RACKET_CALLBACK_TYPES char* name,\
+                              int log_level,\
+                              int msg_len,\
+                              char* msg
+
+#ifdef __MINGW32__
+#define LIBVID_DLL __declspec(dllexport)
+LIBVID_DLL void set_racket_log_callback(void(*callback)(RACKET_CALLBACK_TYPES));
+LIBVID_DLL void ffmpeg_log_callback(void *avcl, int level, const char *fmt, va_list vl);
+#endif
+
+
+void (*racket_log_callback)(RACKET_CALLBACK_TYPES) = NULL;
+
 
 /**
  * @brief set_racket_log_callback
@@ -37,7 +48,7 @@ void (*racket_log_callback)(char* name,
  *
  * Note that only ONE function can be used at a time.
  */
-void set_racket_log_callback(void (*callback)(char*, int, int, char*)) {
+void set_racket_log_callback(void (*callback)(RACKET_CALLBACK_TYPES)){
   racket_log_callback = callback;
 }
 
