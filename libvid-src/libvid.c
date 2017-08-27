@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <libavutil/avutil.h>
 
-void (*racket_log_callback)(void* avclass,
+void (*racket_log_callback)(char* name,
                             int log_level,
                             int msg_len,
                             char* msg) = NULL;
@@ -37,7 +37,7 @@ void (*racket_log_callback)(void* avclass,
  *
  * Note that only ONE function can be used at a time.
  */
-void set_racket_log_callback(void (*callback)(void*, int, int, char*)) {
+void set_racket_log_callback(void (*callback)(char*, int, int, char*)) {
   racket_log_callback = callback;
 }
 
@@ -62,13 +62,23 @@ void ffmpeg_log_callback(void * avcl,
   char find_size_buf[FIND_BUFF_SIZE];
   char *buff;
   va_list size_vl;
+  size_t namesize;
+  const char *tmp;
+  char *name = NULL;
+
+  if(avcl) {
+    tmp = ((AVClass*)(*(void**)avcl))->class_name;
+    namesize = strlen(tmp);
+    name = malloc((1 + namesize)*sizeof(char));
+    strncpy(name, tmp, (1 + namesize));
+  }
 
   if(racket_log_callback) {
     va_copy(size_vl, vl);
     buffsize = vsnprintf(find_size_buf, FIND_BUFF_SIZE, fmt, size_vl);
     buff = malloc((buffsize + 1) * sizeof(char));
     vsnprintf(buff, buffsize + 1, fmt, vl);
-    racket_log_callback(avcl, level, buffsize, buff);
+    racket_log_callback(name, level, buffsize, buff);
   } else {
     vsnprintf(find_size_buf, FIND_BUFF_SIZE, fmt, vl);
   }
