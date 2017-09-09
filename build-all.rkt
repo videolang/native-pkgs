@@ -12,6 +12,8 @@
 (define scripts
   (list "build-x86_64-macosx.rkt"
         "build-x86_64-win32.rkt"
-        "build-i386-win32.rkt"))
+        "build-i386-win32.rkt"
+        "build-x86_64-linux.rkt"
+        "build-i386-linux.rkt"))
 (for ([s (in-list scripts)])
   ((find-exe) (build-path here s)))
