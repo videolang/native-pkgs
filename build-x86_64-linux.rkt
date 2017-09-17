@@ -10,13 +10,23 @@
 (define-runtime-path here ".")
 
 (define gcc (find-executable-path "gcc"))
+(define make (find-executable-path "make"))
 
 (define libvid-target (build-path here "libvid-i386-linux"))
+
+(define cores 4)
+
+;; Need to compile ffmpeg, but only for libvid's include path.
+(parameterize ([current-directory (build-path here "ffmpeg-src")])
+  (system* (simple-form-path "configure")
+           (format "--prefix=~a" (current-directory)))
+  (system* make (format "-j~a" cores))
+  (system* make "install"))
 
 (parameterize ([current-directory (build-path here "libvid-src")])
   (system* gcc "-m64" "-Wall" "-Werror"
            "-shared"
-           "-o" (build-path libvid-target "libvid-0.dll")
+           "-o" (build-path libvid-target "libvid.so.0")
            "-I../ffmpeg-src/include"
            "-fPIC"
            "libvid.c"))
