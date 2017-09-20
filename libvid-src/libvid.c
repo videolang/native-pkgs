@@ -89,6 +89,7 @@ void ffmpeg_log_callback(void * avcl,
     buffsize = vsnprintf(find_size_buf, FIND_BUFF_SIZE, fmt, size_vl);
     buff = malloc((buffsize + 1) * sizeof(char));
     vsnprintf(buff, buffsize + 1, fmt, vl);
+    va_end(size_vl);
     racket_log_callback(name, level, buffsize, buff);
   } else {
     vsnprintf(find_size_buf, FIND_BUFF_SIZE, fmt, vl);
