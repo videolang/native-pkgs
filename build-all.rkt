@@ -16,4 +16,9 @@
         "build-x86_64-linux.rkt"
         "build-i386-linux.rkt"))
 (for ([s (in-list scripts)])
-  ((find-exe) (build-path here s)))
+  (displayln "=============================================================")
+  (displayln "=============================================================")
+  (printf "Building ~a~n" s)
+  (displayln "=============================================================")
+  (displayln "=============================================================")
+  (system* (find-exe) (build-path here s)))
