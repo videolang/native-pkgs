@@ -28,10 +28,8 @@
 #include <libavutil/bprint.h>
 
 #define RACKET_CALLBACK_TYPES int log_level,\
-                              int name_len,\
-                              char* name,\
-                              int msg_len,\
-                              char* msg
+                              AVBPrint* name,\
+                              AVBPrint* msg
 
 #ifdef __MINGW32__
 #define LIBVID_DLL __declspec(dllexport)
@@ -69,28 +67,25 @@ void ffmpeg_log_callback(void * avcl,
                          int level,
                          const char * fmt,
                          va_list vl) {
-  AVBPrint buf[2];
-  char *name = NULL;
-  char *message = NULL;
+  AVBPrint *name = malloc(sizeof(AVBPrint));
+  AVBPrint *message = malloc(sizeof(AVBPrint));
 
-  av_bprint_init(buf+0, 0, 1);
-  av_bprint_init(buf+1, 0, 65536); // 2^16
+  av_bprint_init(name, 0, 1);
+  av_bprint_init(message, 0, 65536); // 2^16
 
   if(avcl) {
-    av_bprintf(buf+0, "%s", ((AVClass*)(*(void**)avcl))->class_name);
+    av_bprintf(name, "%s", ((AVClass*)(*(void**)avcl))->class_name);
   }
 
-  av_vbprintf(buf+1, fmt, vl);
+  av_vbprintf(message, fmt, vl);
 
-  if(racket_log_callback && 0) {
-    name = malloc(buf[0].len*sizeof(char));
-    message = malloc(buf[1].len*sizeof(char));
-    strncpy(name, buf[0].str, buf[0].len);
-    strncpy(message, buf[1].str, buf[1].len);
-    racket_log_callback(level, buf[0].len, name, buf[1].len, message);
+  if(racket_log_callback && 0) { // XXX remove 0
+    racket_log_callback(level, name, message);
+  } else {
+    av_bprint_finalize(message, NULL);
+    free(name);
+    free(message);
   }
-
-  av_bprint_finalize(buf+1, NULL);
 }
 
 int libvid_get_version_major() {
