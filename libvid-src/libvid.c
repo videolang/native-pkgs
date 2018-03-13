@@ -25,9 +25,11 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <libavutil/avutil.h>
+#include <libavutil/bprint.h>
 
-#define RACKET_CALLBACK_TYPES char* name,\
-                              int log_level,\
+#define RACKET_CALLBACK_TYPES int log_level,\
+                              int name_len,\
+                              char* name,\
                               int msg_len,\
                               char* msg
 
@@ -52,8 +54,6 @@ void set_racket_log_callback(void (*callback)(RACKET_CALLBACK_TYPES)){
   racket_log_callback = callback;
 }
 
-#define FIND_BUFF_SIZE 32
-
 /**
  * @brief ffmpeg_log_callback
  *
@@ -69,31 +69,28 @@ void ffmpeg_log_callback(void * avcl,
                          int level,
                          const char * fmt,
                          va_list vl) {
-  int buffsize;
-  char find_size_buf[FIND_BUFF_SIZE];
-  char *buff;
-  va_list size_vl;
-  size_t namesize;
-  const char *tmp;
+  AVBPrint buf[2];
   char *name = NULL;
+  char *message = NULL;
+
+  av_bprint_init(buf+0, 0, 1);
+  av_bprint_init(buf+1, 0, 65536); // 2^16
 
   if(avcl) {
-    tmp = ((AVClass*)(*(void**)avcl))->class_name;
-    namesize = strlen(tmp);
-    name = malloc((1 + namesize)*sizeof(char));
-    strncpy(name, tmp, (1 + namesize));
+    av_bprintf(buf+0, "%s", ((AVClass*)(*(void**)avcl))->class_name);
   }
 
-  if(racket_log_callback) {
-    va_copy(size_vl, vl);
-    buffsize = vsnprintf(find_size_buf, FIND_BUFF_SIZE, fmt, size_vl);
-    buff = malloc((buffsize + 1) * sizeof(char));
-    vsnprintf(buff, buffsize + 1, fmt, vl);
-    va_end(size_vl);
-    racket_log_callback(name, level, buffsize, buff);
-  } else {
-    vsnprintf(find_size_buf, FIND_BUFF_SIZE, fmt, vl);
+  av_vbprintf(buf+1, fmt, vl);
+
+  if(racket_log_callback && 0) {
+    name = malloc(buf[0].len*sizeof(char));
+    message = malloc(buf[1].len*sizeof(char));
+    strncpy(name, buf[0].str, buf[0].len);
+    strncpy(message, buf[1].str, buf[1].len);
+    racket_log_callback(level, buf[0].len, name, buf[1].len, message);
   }
+
+  av_bprint_finalize(buf+1, NULL);
 }
 
 int libvid_get_version_major() {
@@ -105,5 +102,16 @@ int libvid_get_version_minor() {
 }
 
 int libvid_get_version_patch() {
+  return 0;
+}
+
+
+/**
+ *  This value returned by this function is used
+ *  internally for Video development. It is only to
+ *  be used as a tag to track which version of libvid
+ *  is installed between Video releases.
+ */
+int libvid_get_version_prerelease() {
   return 0;
 }
