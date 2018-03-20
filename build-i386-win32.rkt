@@ -18,4 +18,6 @@
            "-shared"
            "-o" (build-path libvid-target "libvid-0.dll")
            "-I../ffmpeg-src/include"
+           "-L../ffmpeg-i386-win32/"
+           "-lavutil-55"
            "libvid.c"))
