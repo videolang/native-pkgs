@@ -5,14 +5,15 @@
 
 (require compiler/find-exe
          racket/runtime-path
-         racket/cmdline)
+         racket/cmdline
+         "build-lib.rkt")
 
 (define-runtime-path here ".")
 
 (define gcc (find-executable-path "gcc"))
 (define make (find-executable-path "make"))
 
-(define libvid-target (build-path here "libvid-i386-linux"))
+(define libvid-target (build-path here "libvid-x86_64-linux"))
 
 (define cores 4)
 
@@ -23,10 +24,4 @@
   (system* make (format "-j~a" cores))
   (system* make "install"))
 
-(parameterize ([current-directory (build-path here "libvid-src")])
-  (system* gcc "-m64" "-Wall" "-Werror"
-           "-shared"
-           "-o" (build-path libvid-target "libvid.so.0")
-           "-I../ffmpeg-src/include"
-           "-fPIC"
-           "libvid.c"))
+(build-libvid libvid-target "libvid.so.0")
