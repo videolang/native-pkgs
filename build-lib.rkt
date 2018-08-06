@@ -8,13 +8,26 @@
 
 (define-runtime-path here ".")
 
-(define gcc (find-executable-path "gcc"))
+;; Executables for compilation
+(define gcc (make-parameter (find-executable-path "gcc")))
 (define git (find-executable-path "git"))
 (define make (find-executable-path "make"))
 (define otool (find-executable-path "otool"))
 (define install-name-tool (find-executable-path "install_name_tool"))
 
-(define cores 4)
+;; Core count.
+(define cores (make-parameter 4))
+
+;; Parameters for target binaries
+(define fribidi (make-parameter #f))
+(define openh264 (make-parameter #f))
+(define avutil (make-parameter #f))
+(define swresample (make-parameter #f))
+(define swscale (make-parameter #f))
+(define avcodec (make-parameter #f))
+(define avformat (make-parameter #f))
+(define avfilter (make-parameter #f))
+(define libvid (make-parameter #f))
 
 ;; Currently unused
 (define (build-fribidi fribidi-target fribidi)
@@ -26,8 +39,8 @@
              (format "--prefix=~a" (current-directory))
              "--enable-shared")
     ;; Run make twice, first time failes
-    (system* make (format "-j~a" cores))
-    (system* make (format "-j~a" cores))
+    (system* make (format "-j~a" (cores)))
+    (system* make (format "-j~a" (cores)))
     ;; make install fails, but the needed file is still generated.
     (system* make "install"))
   (copy-file (build-path here "fribidi-src" "lib" fribidi)
@@ -39,7 +52,7 @@
     (system* git "clean" "-fxd")
     (system* (simple-form-path "autogen.sh"))
     (system* (simple-form-path "configure") (format "--prefix=~a" (current-directory)))
-    (system* make (format "-j~a" cores))
+    (system* make (format "-j~a" (cores)))
     (system* make "install")))
 
 (define (build-lame os)
@@ -56,8 +69,12 @@
           (for ([i (in-list lines)]
                 #:unless (equal? i patch-string))
             (displayln i)))))
-    (system* (simple-form-path "configure") (format "--prefix=~a" (current-directory)))
-    (system* make (format "-j~a" cores))
+    (system* (simple-form-path "configure")
+             "--disable-dependency-tracking"
+             "--disable-debug"
+             "--enable-nasm"
+             (format "--prefix=~a" (current-directory)))
+    (system* make (format "-j~a" (cores)))
     (system* make "install")))
 
 (define (build-ffmpeg ffmpeg-target os)
@@ -71,24 +88,16 @@
              "--enable-libopenh264"
              (format "--prefix=~a" (current-directory)))
     ;"--libdir='@loader_path'")
-    (system* make (format "-j~a" cores))
+    (system* make (format "-j~a" (cores)))
     (system* make "install"))
   (when (eq? os 'macosx)
-    (define fribidi "libfribidi.0.dylib")
-    (define openh264 "libopenh264.4.dylib")
-    (define avutil "libavutil.56.dylib")
-    (define swresample "libswresample.3.dylib")
-    (define swscale "libswscale.5.dylib")
-    (define avcodec "libavcodec.58.dylib")
-    (define avformat "libavformat.58.dylib")
-    (define avfilter "libavfilter.7.dylib")
     (define ffmpeg-def-table
-      (hash avutil (set)
-            swresample (set avutil)
-            swscale (set avutil)
-            avcodec (set avutil swresample)
-            avformat (set avutil avcodec swresample)
-            avfilter (set avutil avformat avcodec swscale swresample)))
+      (hash (avutil) (set)
+            (swresample) (set (avutil))
+            (swscale) (set (avutil))
+            (avcodec) (set (avutil) (swresample))
+            (avformat) (set (avutil) (avcodec) (swresample))
+            (avfilter) (set (avutil) (avformat) (avcodec) (swscale) (swresample))))
     (parameterize ([current-directory (build-path here "ffmpeg-src" "lib")])
       (define (rename input libname relative-to)
         (define from
@@ -110,11 +119,10 @@
                  (build-path ffmpeg-target lib)
                  #t))))
 
-(define (build-libvid target-dir target-name os word-size
-                      #:gcc [local-gcc #f])
+(define (build-libvid target-dir target-name os word-size)
   (parameterize ([current-directory (build-path here "libvid-src")])
     (define args
-      `(,(or local-gcc gcc) "-Wall" "-Werror"
+      `(,(gcc) "-Wall" "-Werror"
              "-shared"
              ,@(case os
                  [(unix) (list "-fPIC" (case word-size
@@ -130,4 +138,14 @@
                        (build-path here target-dir target-name))
              "-I../ffmpeg-src/include"
              "libvid.c"))
-    (apply system* args)))
+    (apply system* args))
+  (when (eq? os 'macosx)
+    (parameterize ([current-directory (build-path here "libvid-src")])
+      (system* install-name-tool
+               "-change" 
+               (format "~a/~a/~a"
+                       (path->string (simplify-path (build-path here "ffmpeg-src/")))
+                       "lib"
+                       (avutil))
+               (format "@loader_path/~a" avutil)
+               (libvid)))))

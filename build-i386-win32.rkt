@@ -10,8 +10,8 @@
 
 (define-runtime-path here ".")
 
-(define gcc (find-executable-path "i686-w64-mingw32-gcc"))
+(gcc (find-executable-path "i686-w64-mingw32-gcc"))
 
 (define libvid-target (build-path here "libvid-i386-win32"))
 
-(build-libvid libvid-target "libvid-0.dll" 'windows 64 #:gcc gcc)
+(build-libvid libvid-target "libvid-0.dll" 'windows 64)

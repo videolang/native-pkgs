@@ -17,15 +17,15 @@
 
 (define-runtime-path here ".")
 
-(define fribidi "libfribidi.0.dylib")
-(define openh264 "libopenh264.4.dylib")
-(define avutil "libavutil.56.dylib")
-(define swresample "libswresample.3.dylib")
-(define swscale "libswscale.5.dylib")
-(define avcodec "libavcodec.58.dylib")
-(define avformat "libavformat.58.dylib")
-(define avfilter "libavfilter.7.dylib")
-(define libvid "libvid.0.dylib")
+(fribidi "libfribidi.0.dylib")
+(openh264 "libopenh264.4.dylib")
+(avutil "libavutil.56.dylib")
+(swresample "libswresample.3.dylib")
+(swscale "libswscale.5.dylib")
+(avcodec "libavcodec.58.dylib")
+(avformat "libavformat.58.dylib")
+(avfilter "libavfilter.7.dylib")
+(libvid "libvid.0.dylib")
 
 (define ffmpeg-target (build-path here "ffmpeg-x86_64-macosx"))
 (define openh264-target (build-path here "openh264-x86_64-macosx"))
@@ -91,25 +91,6 @@
   (building-lib "libvid")
   (build-libvid libvid-target "libvid.0.dylib" 'macosx 64))
 
-(define ffmpeg-def-table
-  (hash avutil (set)
-        swresample (set avutil)
-        swscale (set avutil)
-        avcodec (set avutil swresample)
-        avformat (set avutil avcodec swresample)
-        avfilter (set avutil avformat avcodec swscale swresample)))
-
-(void
- (parameterize ([current-directory (build-path here "libvid-src")])
-   (system* install-name-tool
-            "-change" 
-            (format "~a/~a/~a"
-                    (path->string (simplify-path (build-path here "ffmpeg-src/")))
-                    "lib"
-                    avutil)
-            (format "@loader_path/~a" avutil)
-            libvid)))
-
 (void
  (system* install-name-tool "-id"
           (format "@loader_path/~a" openh264)
@@ -117,8 +98,4 @@
 
 (copy-file (build-path here "openh264-src" "lib" openh264)
            (build-path openh264-target openh264)
-           #t)
-
-(copy-file (build-path here "libvid-src" libvid)
-           (build-path libvid-target libvid)
            #t)
