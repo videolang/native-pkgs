@@ -5,7 +5,8 @@
 
 (require compiler/find-exe
          racket/runtime-path
-         racket/cmdline)
+         racket/cmdline
+         "build-lib.rkt")
 
 (define-runtime-path here ".")
 
@@ -13,11 +14,4 @@
 
 (define libvid-target (build-path here "libvid-x86_64-win32"))
 
-(parameterize ([current-directory (build-path here "libvid-src")])
-  (system* gcc "-Wall" "-Werror"
-           "-shared"
-           "-o" (build-path libvid-target "libvid-0.dll")
-           "-I../ffmpeg-src/include"
-           "-L../ffmpeg-x86_64-win32/"
-           "-lavutil-55"
-           "libvid.c"))
+(build-libvid libvid-target "libvid-0.dll" 'windows 64 #:gcc gcc)

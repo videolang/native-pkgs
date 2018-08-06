@@ -24,4 +24,4 @@
   (system* make (format "-j~a" cores))
   (system* make "install"))
 
-(build-libvid libvid-target "libvid.so.0")
+(build-libvid libvid-target "libvid.so.0" 'unix '32)
