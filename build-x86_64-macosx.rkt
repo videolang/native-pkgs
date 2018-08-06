@@ -82,6 +82,8 @@
     (building-lib "openh264")
     (system* git "clean" "-fxd")
     (system* make (format "-j~a" cores) "all" "install" (format "PREFIX=~a" (current-directory))))
+  (building-lib "lame")
+  (build-lame 'macosx)
   (building-lib "frei0r")
   (build-frei0r)
   (building-lib "ffmpeg")

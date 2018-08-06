@@ -42,6 +42,24 @@
     (system* make (format "-j~a" cores))
     (system* make "install")))
 
+(define (build-lame os)
+  (parameterize ([current-directory (build-path here "lame-src")])
+    (system* git "clean" "-fxd")
+    (system* git "checkout" ".")
+    (when (eq? os 'macosx)
+      (define file-to-patch "include/libmp3lame.sym")
+      (define patch-string "lame_init_old")
+      (define lines (file->lines file-to-patch))
+      (with-output-to-file file-to-patch
+        #:exists 'replace
+        (λ ()
+          (for ([i (in-list lines)]
+                #:unless (equal? i patch-string))
+            (displayln i)))))
+    (system* (simple-form-path "configure") (format "--prefix=~a" (current-directory)))
+    (system* make (format "-j~a" cores))
+    (system* make "install")))
+
 (define (build-ffmpeg ffmpeg-target os)
   (parameterize ([current-directory (build-path here "ffmpeg-src")])
     (system* git "clean" "-fxd")
