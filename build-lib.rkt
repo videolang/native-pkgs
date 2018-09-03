@@ -85,6 +85,7 @@
              ;"--disable-pthreads" ;; <-- Only uncomment for testing
              "--disable-sdl2"
              "--disable-indev=jack"
+             "--enable-libmp3lame"
              "--enable-libopenh264"
              (format "--prefix=~a" (current-directory)))
     ;"--libdir='@loader_path'")
@@ -120,6 +121,9 @@
                  #t))))
 
 (define (build-libvid target-dir target-name os word-size)
+  (define abs-target-dir (if (absolute-path? target-dir)
+                             (build-path target-dir)
+                             (build-path here target-dir)))
   (parameterize ([current-directory (build-path here "libvid-src")])
     (define args
       `(,(gcc) "-Wall" "-Werror"
@@ -133,19 +137,17 @@
                  [(windows) (case word-size
                               [(32) "-L../ffmpeg-i386-win32/" "-lavutil-55"]
                               [(64) "-L../ffmpeg-x86_64-win32/" "-labutil-55"])])
-             "-o" ,(if (absolute-path? target-dir)
-                       (build-path target-dir target-name)
-                       (build-path here target-dir target-name))
+             "-o" ,(build-path abs-target-dir target-name)
              "-I../ffmpeg-src/include"
              "libvid.c"))
     (apply system* args))
   (when (eq? os 'macosx)
-    (parameterize ([current-directory (build-path here "libvid-src")])
+    (parameterize ([current-directory abs-target-dir])
       (system* install-name-tool
                "-change" 
                (format "~a/~a/~a"
                        (path->string (simplify-path (build-path here "ffmpeg-src/")))
                        "lib"
                        (avutil))
-               (format "@loader_path/~a" avutil)
+               (format "@loader_path/~a" (avutil))
                (libvid)))))

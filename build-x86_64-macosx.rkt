@@ -93,9 +93,9 @@
 
 (void
  (system* install-name-tool "-id"
-          (format "@loader_path/~a" openh264)
-          (build-path here "openh264-src" "lib" openh264)))
+          (format "@loader_path/~a" (openh264))
+          (build-path here "openh264-src" "lib" (openh264))))
 
-(copy-file (build-path here "openh264-src" "lib" openh264)
-           (build-path openh264-target openh264)
+(copy-file (build-path here "openh264-src" "lib" (openh264))
+           (build-path openh264-target (openh264))
            #t)
