@@ -1,13 +1,13 @@
 #lang info
 
 (define copy-foreign-libs
-  '("libavcodec.57.dylib"
+  '("libavcodec.58.dylib"
     "libavdevice.57.dylib"
-    "libavfilter.6.dylib"
-    "libavformat.57.dylib"
-    "libavutil.55.dylib"
-    "libswresample.2.dylib"
-    "libswscale.4.dylib"))
+    "libavfilter.7.dylib"
+    "libavformat.58.dylib"
+    "libavutil.56.dylib"
+    "libswresample.3.dylib"
+    "libswscale.5.dylib"))
 
 (define deps '("base"
                "openh264-x86_64-macosx"))
