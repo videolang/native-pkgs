@@ -82,6 +82,7 @@
     (system* git "clean" "-fxd")
     (system* (simple-form-path "configure")
              "--enable-shared"
+             ;"--enable-debug=3" ;; <-- Optional, for debugging
              ;"--disable-pthreads" ;; <-- Only uncomment for testing
              "--disable-sdl2"
              "--disable-indev=jack"
