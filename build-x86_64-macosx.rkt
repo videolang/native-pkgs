@@ -25,6 +25,7 @@
 (avcodec "libavcodec.58.dylib")
 (avformat "libavformat.58.dylib")
 (avfilter "libavfilter.7.dylib")
+(avdevice "libavdevice.58.dylib")
 (libvid "libvid.0.dylib")
 
 (define ffmpeg-target (build-path here "ffmpeg-x86_64-macosx"))

@@ -27,6 +27,7 @@
 (define avcodec (make-parameter #f))
 (define avformat (make-parameter #f))
 (define avfilter (make-parameter #f))
+(define avdevice (make-parameter #f))
 (define libvid (make-parameter #f))
 
 ;; Currently unused
@@ -99,7 +100,8 @@
             (swscale) (set (avutil))
             (avcodec) (set (avutil) (swresample))
             (avformat) (set (avutil) (avcodec) (swresample))
-            (avfilter) (set (avutil) (avformat) (avcodec) (swscale) (swresample))))
+            (avfilter) (set (avutil) (avformat) (avcodec) (swscale) (swresample))
+            (avdevice) (set (avutil) (avformat) (avcodec) (avfilter) (swscale) (swresample))))
     (parameterize ([current-directory (build-path here "ffmpeg-src" "lib")])
       (define (rename input libname relative-to)
         (define from
