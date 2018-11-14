@@ -1,8 +1,0 @@
-Built with:
-
-FFMPEG 3.3.2
-
-Build command:
-
-./configure --enable-shared --disable-sdl2 --disable-indev=jack --libdir='@loader_path'
-make -j8
