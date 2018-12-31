@@ -78,6 +78,8 @@ void ffmpeg_log_callback(void * avcl,
     av_bprintf(&name, "%s", ((AVClass*)(*(void**)avcl))->class_name);
   }
 
+  printf("logged!\n");
+
   av_vbprintf(&message, fmt, vl);
 
   if(racket_log_callback) {
