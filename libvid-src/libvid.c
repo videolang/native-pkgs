@@ -50,6 +50,7 @@ void (*racket_log_callback)(RACKET_CALLBACK_TYPES) = NULL;
  * Note that only ONE function can be used at a time.
  */
 void set_racket_log_callback(void (*callback)(RACKET_CALLBACK_TYPES)){
+    printf("set-racket-log-callback\n");
   racket_log_callback = callback;
 }
 
