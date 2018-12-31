@@ -119,5 +119,5 @@ int libvid_get_version_patch() {
  *  is installed between Video releases.
  */
 int libvid_get_version_prerelease() {
-  return 0;
+  return 1;
 }
