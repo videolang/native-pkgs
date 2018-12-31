@@ -54,7 +54,6 @@ void (*racket_log_callback)(RACKET_CALLBACK_TYPES) = NULL;
  * Note that only ONE function can be used at a time.
  */
 void set_racket_log_callback(void (*callback)(RACKET_CALLBACK_TYPES)){
-    printf("set-racket-log-callback\n");
   racket_log_callback = callback;
 }
 
@@ -82,8 +81,6 @@ void ffmpeg_log_callback(void * avcl,
   if(avcl) {
     av_bprintf(&name, "%s", ((AVClass*)(*(void**)avcl))->class_name);
   }
-
-  printf("logged!\n");
 
   av_vbprintf(&message, fmt, vl);
 
