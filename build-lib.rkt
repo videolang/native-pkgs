@@ -137,7 +137,7 @@
                                          [(64) "-m64"]))]
                  [(macosx) (list "-undefined" "dynamic_lookup"
                                  "-L../ffmpeg-src/lib/" "-lavutil")]
-                 [(windows) (list* ;"-mwindows"
+                 [(windows) (list* "-mwindows"
                                    (case word-size
                                      [(32) (list "-L../ffmpeg-i386-win32/" "-lavutil-56")]
                                      [(64) (list "-L../ffmpeg-x86_64-win32/" "-lavutil-56")]))])
