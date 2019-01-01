@@ -1,13 +1,13 @@
 #lang info
 
 (define copy-foreign-libs
-  '("avcodec-57.dll"
-    "avdevice-57.dll"
-    "avfilter-6.dll"
-    "avformat-57.dll"
-    "avutil-55.dll"
-    "postproc-54.dll"
-    "swresample-2.dll"
-    "swscale-4.dll"))
+  '("avcodec-58.dll"
+    "avdevice-58.dll"
+    "avfilter-7.dll"
+    "avformat-58.dll"
+    "avutil-56.dll"
+    "postproc-55.dll"
+    "swresample-3.dll"
+    "swscale-5.dll"))
 
 (define deps '("base"))
