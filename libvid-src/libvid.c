@@ -36,6 +36,10 @@
 #define LIBVID_DLL __declspec(dllexport)
 LIBVID_DLL void set_racket_log_callback(void(*callback)(RACKET_CALLBACK_TYPES));
 LIBVID_DLL void ffmpeg_log_callback(void *avcl, int level, const char *fmt, va_list vl);
+LIBVID_DLL int libvid_get_version_major();
+LIBVID_DLL int libvid_get_version_minor();
+LIBVID_DLL int libvid_get_version_patch();
+LIBVID_DLL int libvid_get_version_prerelease();
 #endif
 
 
@@ -116,5 +120,5 @@ int libvid_get_version_patch() {
  *  is installed between Video releases.
  */
 int libvid_get_version_prerelease() {
-  return 0;
+  return 1;
 }
