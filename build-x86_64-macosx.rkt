@@ -8,6 +8,11 @@
          racket/cmdline
          "build-lib.rkt")
 
+(define-runtime-path here ".")
+(define libvid-target (build-path here "libvid-x86_64-macosx"))
+(build-libvid libvid-target "libvid.0.dylib" 'macosx 64)
+
+#|
 (define cores 1)
 (command-line
  #:program "build"
@@ -100,3 +105,4 @@
 (copy-file (build-path here "openh264-src" "lib" (openh264))
            (build-path openh264-target (openh264))
            #t)
+|#
