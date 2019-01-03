@@ -17,11 +17,13 @@
 
 (define cores 4)
 
+#|
 ;; Need to compile ffmpeg, but only for libvid's include path.
 (parameterize ([current-directory (build-path here "ffmpeg-src")])
   (system* (simple-form-path "configure")
            (format "--prefix=~a" (current-directory)))
   (system* make (format "-j~a" cores))
   (system* make "install"))
+|#
 
 (build-libvid libvid-target "libvid.so.0" 'unix 64)
