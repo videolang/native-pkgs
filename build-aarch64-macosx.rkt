@@ -9,7 +9,7 @@
          "build-lib.rkt")
 
 (define-runtime-path here ".")
-(define libvid-target (build-path here "libvid-aarm-macosx"))
+(define libvid-target (build-path here "libvid-aarch64-macosx"))
 (build-libvid libvid-target "libvid.0.dylib" 'macosx 64)
 
 #|
@@ -33,10 +33,10 @@
 (avdevice "libavdevice.58.dylib")
 (libvid "libvid.0.dylib")
 
-(define ffmpeg-target (build-path here "ffmpeg-aarm-macosx"))
-(define openh264-target (build-path here "openh264-aarm-macosx"))
-(define fribidi-target (build-path here "fribidi-aarm-macosx"))
-(define libvid-target (build-path here "libvid-aarm-macosx"))
+(define ffmpeg-target (build-path here "ffmpeg-aarch64-macosx"))
+(define openh264-target (build-path here "openh264-aarch64-macosx"))
+(define fribidi-target (build-path here "fribidi-aarch64-macosx"))
+(define libvid-target (build-path here "libvid-aarch64-macosx"))
 
 (define git (find-executable-path "git"))
 (define otool (find-executable-path "otool"))
