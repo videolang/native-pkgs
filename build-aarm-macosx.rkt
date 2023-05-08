@@ -33,10 +33,10 @@
 (avdevice "libavdevice.58.dylib")
 (libvid "libvid.0.dylib")
 
-(define ffmpeg-target (build-path here "ffmpeg-x86_64-macosx"))
-(define openh264-target (build-path here "openh264-x86_64-macosx"))
-(define fribidi-target (build-path here "fribidi-x86_64-macosx"))
-(define libvid-target (build-path here "libvid-x86_64-macosx"))
+(define ffmpeg-target (build-path here "ffmpeg-aarm-macosx"))
+(define openh264-target (build-path here "openh264-aarm-macosx"))
+(define fribidi-target (build-path here "fribidi-aarm-macosx"))
+(define libvid-target (build-path here "libvid-aarm-macosx"))
 
 (define git (find-executable-path "git"))
 (define otool (find-executable-path "otool"))
