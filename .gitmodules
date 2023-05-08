@@ -1,12 +1,12 @@
 [submodule "ffmpeg-src"]
 	path = ffmpeg-src
-	url = git://github.com/FFmpeg/FFmpeg.git
+	url = https://github.com/FFmpeg/FFmpeg.git
 [submodule "openh264-src"]
 	path = openh264-src
-	url = git://github.com/cisco/openh264.git
+	url = https://github.com/cisco/openh264.git
 [submodule "libass-src"]
 	path = libass-src
-	url = git://github.com/libass/libass.git
+	url = https://github.com/libass/libass.git
 [submodule "fontconfig-src"]
 	path = fontconfig-src
 	url = git://anongit.freedesktop.org/fontconfig
@@ -15,13 +15,13 @@
 	url = git://git.savannah.gnu.org/freetype/freetype2.git
 [submodule "frei0r-src"]
 	path = frei0r-src
-	url = git://github.com/dyne/frei0r.git
+	url = https://github.com/dyne/frei0r.git
 [submodule "libpng-src"]
 	path = libpng-src
 	url = git://git.code.sf.net/p/libpng/code
 [submodule "OpenGL-Registry"]
 	path = OpenGL-Registry
-	url = git://github.com/KhronosGroup/OpenGL-Registry.git
+	url = https://github.com/KhronosGroup/OpenGL-Registry.git
 [submodule "fribidi-src"]
 	path = fribidi-src
 	url = git://anongit.freedesktop.org/fribidi/fribidi
