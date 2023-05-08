@@ -123,7 +123,7 @@
                  (build-path ffmpeg-target lib)
                  #t))))
 
-(define (build-libvid target-dir target-name os word-size)
+(define (build-libvid target-dir target-name os word-size [arch #f])
   (define abs-target-dir (if (absolute-path? target-dir)
                              (build-path target-dir)
                              (build-path here target-dir)))
@@ -135,8 +135,10 @@
                  [(unix) (list "-fPIC" (case word-size
                                          [(32) "-m32"]
                                          [(64) "-m64"]))]
-                 [(macosx) (list "-undefined" "dynamic_lookup"
-                                 "-L../ffmpeg-src/lib/" "-lavutil")]
+                 [(macosx) (case arch
+			     [(aarch64) (list "-L../ffmpeg-src/lib/" "-lavutil")]
+			     [else (list "-undefined" "dynamic_lookup"
+                                 	 "-L../ffmpeg-src/lib/" "-lavutil")])]
                  [(windows) (case word-size
                               [(32) (list "-L../ffmpeg-i386-win32/" "-lavutil-56")]
                               [(64) (list "-L../ffmpeg-x86_64-win32/" "-lavutil-56")])])
@@ -144,7 +146,8 @@
              "-I../ffmpeg-src/include"
              "libvid.c"))
     (apply system* args))
-  (when (eq? os 'macosx)
+  (when (and (eq? os 'macosx)
+	     (not (eq? arch 'aarch64)))
     (parameterize ([current-directory abs-target-dir])
       (system* install-name-tool
                "-change" 
